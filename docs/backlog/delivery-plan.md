@@ -51,6 +51,7 @@ These are not ADRs. Change them in the service design before coding the epic the
 ## Open questions
 
 Resolve these in the service design named here. They block the feature listed beside them.
+Draft answers (not Accepted until promoted): [open-question-drafts.md](./open-question-drafts.md).
 
 | # | Question | Blocks | Where to write the answer |
 |---|---|---|---|

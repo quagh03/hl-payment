@@ -342,7 +342,71 @@ Failure handling that must be implemented explicitly:
 - **Ledger rejects posting (wallet frozen)** → `REQUIRES_REVIEW`; money goes to `SUSPENSE`; an ops action moves it later.
 - **Duplicate webhooks, replayed Kafka messages, orchestrator crash mid-step** → saga state is persisted (`saga_instance.step`, `saga_instance.state`) and every step is idempotent, so resume is safe.
 
-### 7.3 Orchestration vs choreography
+### 7.3 P2P transfer (short orchestration; `payment-service` is the orchestrator)
+
+Internal money stays inside the platform. The request finishes in one call: reserve on the ledger, check KYC and limits, then post or void. The API returns the final Payment. Balance projections and notifications follow on Kafka.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant C as Client
+  participant KG as Kong
+  participant PM as payment-service
+  participant US as user-service
+  participant WL as wallet-service
+  participant LG as ledger-service
+  participant K as Kafka
+  participant NT as notification
+
+  C->>KG: POST /v1/payments/transfers (JWT, Idempotency-Key)
+  KG->>KG: validate JWT, rate limit, add X-Correlation-Id
+  KG->>PM: forward
+  PM->>PM: create Payment INITIATED and SagaInstance, write outbox PaymentInitiated
+  PM->>LG: reserve amount plus fee, idempotencyKey = paymentId
+  alt insufficient available balance
+    LG-->>PM: rejected
+    PM->>PM: Payment becomes FAILED, write outbox PaymentFailed
+    PM-->>C: problem INSUFFICIENT_FUNDS
+    PM->>K: PaymentFailed
+    K->>NT: email and in-app notification
+  else reserved
+    LG-->>PM: PENDING
+    PM->>PM: Payment becomes RESERVED
+    PM->>US: KYC tier and account status
+    US-->>PM: tier and status
+    PM->>WL: check and increment daily and monthly limits
+    WL-->>PM: usage result
+    alt checks pass
+      PM->>LG: post transfer
+      LG-->>PM: POSTED
+      PM->>PM: Payment becomes COMPLETED, write outbox PaymentCompleted
+      PM-->>C: 201 paymentId, COMPLETED
+      LG->>K: TransferPosted
+      PM->>K: PaymentCompleted
+    else account frozen or limit breached
+      PM->>LG: void transfer
+      LG-->>PM: VOIDED
+      PM->>PM: Payment becomes FAILED, write outbox PaymentFailed
+      PM-->>C: problem WALLET_FROZEN or limit exceeded
+      LG->>K: TransferVoided
+      PM->>K: PaymentFailed
+    end
+    K->>WL: update both balance projections
+    K->>NT: email and in-app notification
+  end
+```
+
+The sync `wallet-service` call only moves limit counters. The later Kafka message updates the balance read model. A `201` can return before both projections have caught up.
+
+Failure handling:
+
+- **Same `Idempotency-Key` retried** → the stored response is returned. A different body with that key is `409 IDEMPOTENCY_CONFLICT`.
+- **Crash after `RESERVED`, before post or void** → resume repeats the checks, then the idempotent post or void.
+- **Ledger expiry** → a `PENDING` transfer that is never posted or voided becomes `EXPIRED` and releases the hold.
+
+The fixture posting is `Dr USER_WALLET:sender 51,000` / `Cr USER_WALLET:receiver 50,000` / `Cr FEE_REVENUE 1,000`. Whether that is one multi-leg transfer or paired transfers is [Q1 in the delivery plan](../backlog/delivery-plan.md).
+
+### 7.4 Orchestration vs choreography
 
 | Flow | Pattern | Reason |
 |---|---|---|

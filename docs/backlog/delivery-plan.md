@@ -292,7 +292,7 @@ The wallet stores a projection. The ledger balance is truth. Opening a wallet op
 | Size | L |
 | Services | `payment-service`, `ledger-service`, `user-service`, `wallet-service` |
 | Depends on | EP-005, EP-006, EP-007 |
-| HLD | §7.1, §7.3 |
+| HLD | §7.1, §7.3, §7.4 |
 
 Short orchestration: reserve, check status and limits, post or void. This is the first slice of `payment-service`, not the full saga machine (that is EP-010).
 
@@ -460,7 +460,7 @@ HMAC stays in `merchant-service`, not in the Kong `hmac-auth` plugin.
 | Size | M |
 | Services | `notification-service` |
 | Depends on | EP-008, EP-010, FT-046 |
-| HLD | §3, §7.3 |
+| HLD | §3, §7.4 |
 
 Pure choreography. No compensation. Delivery failure does not change Payment state.
 
@@ -494,7 +494,7 @@ Not in M4, still: CI/CD, Kubernetes, multi-region, production PSP credentials. A
 | Size | L |
 | Services | `payment-service`, `gateway-adapter-service`, `ledger-service` |
 | Depends on | EP-009, EP-010 |
-| HLD | §1, §7.3 |
+| HLD | §1, §7.4 |
 
 The first flow that must undo a step. Reserve a pending debit, disburse through a mock bank, post on success, void on failure.
 
@@ -575,7 +575,8 @@ Initial SLOs, from the HLD, checked on the local stack with the top-up scenario:
 | §6 Ledger and chart of accounts | EP-005, fee legs in EP-008, suspense in EP-010, settlement in EP-015 |
 | §7.1 Payment state machine | P2P subset in EP-008, top-up in EP-010, refund states in EP-012, withdrawal in EP-014 |
 | §7.2 Top-up sequence and the four failure cases | FT-038, FT-039, FT-040 |
-| §7.3 Orchestration vs choreography | Orchestration EP-008, EP-010, EP-012, EP-014. Choreography EP-007, EP-013, FT-050, EP-015 ingest |
+| §7.3 P2P sequence | EP-008 (FT-029, FT-030) |
+| §7.4 Orchestration vs choreography | Orchestration EP-008, EP-010, EP-012, EP-014. Choreography EP-007, EP-013, FT-050, EP-015 ingest |
 | §8 Outbox, inbox, envelope | FT-007, used for real in FT-022 and after |
 | §9 Cross-cutting standards | EP-002 |
 | §10 Resilience | FT-035, FT-044, FT-055, FT-061 |

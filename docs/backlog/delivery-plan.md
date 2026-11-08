@@ -23,7 +23,7 @@ Sizes: **S** one module or endpoint, **M** one aggregate or adapter, **L** a new
 | M1 Internal money | 1 | Ledger is the system of record; wallets project it; P2P posts or voids | EP-005–EP-008 | Property tests hold ledger invariants. A P2P updates both wallet projections. Restarting `wallet-service` mid-flow converges |
 | M2 External money in | 2 | Top-up through Mock PSP, including duplicate, late, and missing webhooks | EP-009–EP-010 | Every Mock PSP script ends with a consistent Payment and ledger. Duplicate webhooks create one posting |
 | M3 Real PSPs and merchants | 3 | MoMo and VNPay sandboxes, merchant pay and refund, notifications | EP-011–EP-013 | Top up via VNPay sandbox, pay a merchant order, partial refund. Merchant receives signed webhooks. Ledger matches |
-| M4 Money out and operations | 4 | Withdrawal compensation, reconciliation, CDC, chaos, SLOs | EP-014–EP-016 | Chaos scenarios stay consistent. An injected break is detected. Dashboards show the SLOs |
+| M4 Money out and operations | 4 | Withdrawal compensation, reconciliation, CDC, chaos, SLOs, Avro on one topic | EP-014–EP-016 | Chaos scenarios stay consistent. An injected break is detected. Dashboards show the SLOs. One topic is published as Avro |
 
 ```mermaid
 flowchart LR
@@ -40,7 +40,7 @@ Out of every milestone, matching the HLD: CI/CD, Kubernetes, multi-region, and r
 These are not ADRs. Change them in the service design before coding the epic they affect.
 
 - The polling outbox is the relay through M3. Debezium replaces it in EP-016. Payloads stay the same.
-- Events are JSON with JSON Schema through M3. Avro on one topic is a stretch in EP-016.
+- Events are JSON with JSON Schema through M3. EP-016 publishes one topic as Avro through Schema Registry. That comparison is required to exit M4. JSON stays the default.
 - `payment-service` is the only saga orchestrator. Wallet balance, notifications, merchant summaries, and reconciliation ingest are choreography.
 - Idempotency responses live in Redis, as the HLD states. Kong does rate limiting; services do not duplicate it.
 - `user-service` owns KYC tier policy and account status. `wallet-service` owns limit usage and exposes a synchronous check-and-increment used in the same step as a ledger reserve. The Kafka projection updates balances; it is not the authority for a limit decision.
@@ -69,6 +69,8 @@ Build order: EP-001, then EP-002 and EP-003 in parallel, then EP-004.
 Not in M0: user, wallet, ledger, payment, gateway, merchant, notification. No business Kafka topics yet. The probe app is a template, not a bounded context.
 
 ### EP-001 — Monorepo and build conventions
+
+Design: [EP-001-monorepo-and-build-conventions.md](./epics/EP-001-monorepo-and-build-conventions.md).
 
 | | |
 |---|---|
@@ -485,7 +487,7 @@ Concepts: compensation, reconciliation, CDC, fault injection, SLOs.
 
 Build order: EP-014 and EP-015 in parallel, then EP-016 so chaos runs against withdrawal and recon as well as top-up.
 
-Not in M4, still: CI/CD, Kubernetes, multi-region, production PSP credentials. Avro is optional inside EP-016.
+Not in M4, still: CI/CD, Kubernetes, multi-region, production PSP credentials. Avro stays on one topic; it does not replace JSON Schema.
 
 ### EP-014 — Withdrawal with compensation
 
@@ -549,7 +551,7 @@ The first flow that must undo a step. Reserve a pending debit, disburse through 
 | FT-060 | Debezium outbox relay | L | CDC publisher replaces the polling relay. Envelope unchanged. Polling relay remains in git long enough to compare |
 | FT-061 | Chaos scenarios | L | Kill ledger mid-saga, drop webhook, duplicate webhook, Kafka rebalance during handling |
 | FT-062 | Dashboards, SLOs, DLT runbook | M | Meters from the HLD, three SLOs, replay steps under `docs/runbooks/` |
-| FT-063 | Avro comparison | S | Stretch. One topic via Schema Registry. Phase exit does not require it |
+| FT-063 | Avro comparison | S | One topic via Schema Registry, compared with JSON Schema. Required for the M4 exit |
 
 | ID | Feature | Story |
 |---|---|---|
@@ -557,11 +559,11 @@ The first flow that must undo a step. Reserve a pending debit, disburse through 
 | US-104 | FT-061 | As a tester, I want each chaos case to end with Payment state, ledger postings, and wallet projection in agreement. |
 | US-105 | FT-062 | As an operator, I want a runbook that replays a DLT record through the inbox without a second business effect. |
 | US-106 | FT-062 | As an operator, I want Grafana to show `payments_total`, `saga_duration_seconds`, `outbox_lag_seconds`, `inbox_duplicates_total`, `ledger_imbalance_total`, and `webhook_signature_failures_total`. |
-| US-107 | FT-063 | As a developer, I want one topic optionally emitted as Avro so the operational cost can be compared with JSON Schema. |
+| US-107 | FT-063 | As a developer, I want one topic emitted as Avro so the operational cost can be compared with JSON Schema. |
 
 Initial SLOs, from the HLD, checked on the local stack with the top-up scenario: top-up completion p95 after webhook under 2s, outbox lag under 5s, `ledger_imbalance_total` stays 0.
 
-**M4 exit:** US-096, US-100, US-104, and US-106 pass.
+**M4 exit:** US-096, US-100, US-104, US-106, and US-107 pass.
 
 ---
 

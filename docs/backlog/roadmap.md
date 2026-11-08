@@ -64,8 +64,8 @@ Deliverables:
 - `reconciliation-service`: ingest PSP settlement files, match against ledger/gateway, raise breaks.
 - Debezium CDC outbox relay replacing the polling relay.
 - Chaos scenarios, DLT replay runbook, Grafana dashboards, SLO definitions.
-- Optional: Avro + Schema Registry for one topic (compare with JSON).
+- Avro + Schema Registry for one topic, compared with JSON Schema. JSON stays the default.
 
-Exit criteria: chaos scenarios pass; reconciliation detects an injected break; dashboards show SLOs.
+Exit criteria: chaos scenarios pass; reconciliation detects an injected break; dashboards show SLOs; one topic is published as Avro.
 
 Concepts: compensation, reconciliation, CDC, fault injection, SLOs.

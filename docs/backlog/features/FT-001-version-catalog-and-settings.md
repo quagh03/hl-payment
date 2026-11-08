@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Epic | [EP-001](../epics/EP-001-monorepo-and-build-conventions.md) |
-| Status | Backlog |
+| Status | In progress |
 | Phase | 0 |
 | Owner | huylq |
 | Last updated | 2026-11-08 |
@@ -17,7 +17,7 @@ FT-001 creates the Gradle skeleton the rest of EP-001 builds on: one version cat
 
 | ID | Story | Status |
 |---|---|---|
-| US-001 | [One version catalog](../user-stories/US-001-one-version-catalog.md) | Backlog |
+| US-001 | [One version catalog](../user-stories/US-001-one-version-catalog.md) | Done |
 | US-002 | [One include in settings](../user-stories/US-002-one-include-in-settings.md) | Backlog |
 
 ## Functional behavior
@@ -106,11 +106,12 @@ Header comment, filled in when the versions are chosen:
 | `spring-boot-starter-actuator` | `org.springframework.boot:spring-boot-starter-actuator` | Boot BOM |
 | `spring-boot-starter-test` | `org.springframework.boot:spring-boot-starter-test` | Boot BOM |
 | `junit-jupiter` | `org.junit.jupiter:junit-jupiter` | Boot BOM |
+| `junit-platform-launcher` | `org.junit.platform:junit-platform-launcher` | Boot BOM. Gradle 9 does not ship the launcher, so `build-logic` puts it on `testRuntimeOnly` |
 | `spring-kafka` | `org.springframework.kafka:spring-kafka` | Boot BOM |
 | `flyway-core` | `org.flywaydb:flyway-core` | Boot BOM |
-| `flyway-database-postgresql` | `org.flywaydb:flyway-database-postgresql` | Boot BOM. Confirm the artifact id against the pinned BOM; keep the alias version-less. |
+| `flyway-database-postgresql` | `org.flywaydb:flyway-database-postgresql` | Boot BOM. Confirmed against Spring Boot 4.1.2. The alias stays version-less. |
 | `jspecify` | `org.jspecify:jspecify` | `version.ref = "jspecify"` |
-| `testcontainers-junit-jupiter` | `org.testcontainers:junit-jupiter` | Boot BOM, or `version.ref = "testcontainers"` when the BOM does not manage it |
+| `testcontainers-junit-jupiter` | `org.testcontainers:testcontainers-junit-jupiter` | Boot BOM, or `version.ref = "testcontainers"` when the BOM does not manage it. Spring Boot 4.1.2 imports Testcontainers BOM 2.0.5, which publishes this artifact id |
 | `errorprone` | `com.google.errorprone:error_prone_core` | `version.ref = "errorprone"` when the key exists |
 
 Plugin alias `spring-boot` is `org.springframework.boot` with `version.ref = "spring-boot"`. When `errorprone` exists, plugin alias `errorprone` is `net.ltgt.errorprone` with `version.ref = "errorprone-plugin"`. FT-002 adds the Boot 4 OpenTelemetry starter alias after checking the Boot 4 reference.
@@ -124,7 +125,17 @@ Selection procedure, recorded in the catalog comment and the wrapper properties:
 3. Read that release's `spring-boot-dependencies` BOM. If `org.testcontainers` is managed, add the Testcontainers alias with no version. If it is not, add `[versions].testcontainers` and point the alias at it.
 4. Choose the current JSpecify release and record it as `jspecify`.
 5. If the current Error Prone release supports the Java 25 toolchain, record `errorprone` and `errorprone-plugin`. Otherwise omit both keys, the library alias, and the plugin alias.
-6. Choose the current `org.gradle.toolchains.foojay-resolver-convention` release that can provision a Java 25 JDK. Record that version only in the root `settings.gradle.kts`.
+6. Choose the current `org.gradle.toolchains.foojay-resolver-convention` release that can provision a Java 25 JDK. Record that version only in the root `settings.gradle.kts`. US-002 records it.
+
+Recorded by US-001 on 2026-11-08:
+
+| Piece | Value |
+|---|---|
+| Gradle wrapper | 9.9.0, binary distribution. Java 25 runtime support starts at 9.1.0 |
+| `spring-boot` | 4.1.2. Current stable Boot 4 patch; 4.2.0 was still a release candidate |
+| Testcontainers | Managed. `spring-boot-dependencies` 4.1.2 imports `testcontainers-bom` 2.0.5, so the catalog has no `testcontainers` key |
+| `jspecify` | 1.0.1 |
+| Error Prone | Supported on the Java 25 toolchain. `errorprone` 2.52.0 and `errorprone-plugin` 5.2.0 |
 
 ### Settings
 
@@ -188,6 +199,7 @@ plugins {
 dependencies {
     testImplementation(platform(libs.spring.boot.dependencies))
     testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(gradleTestKit())
 }
 

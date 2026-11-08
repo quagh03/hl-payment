@@ -89,8 +89,8 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 
 | ID | Feature | Story |
 |---|---|---|
-| US-001 | FT-001 | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
-| US-002 | FT-001 | As a developer, I want adding a module to be one include in settings. |
+| [US-001](./user-stories/US-001-one-version-catalog.md) | FT-001 | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
+| [US-002](./user-stories/US-002-one-include-in-settings.md) | FT-001 | As a developer, I want adding a module to be one include in settings. |
 | US-003 | FT-002 | As a developer, I want Java 25, `@NullMarked`, and JUnit 5 defaults applied without copying build scripts. |
 | US-004 | FT-002 | As a developer, I want a Spring service plugin that already applies actuator, OpenTelemetry, Flyway, and Testcontainers. |
 | US-005 | FT-002 | As a developer, I want a library plugin for `platform-*` modules that are not Boot applications. |

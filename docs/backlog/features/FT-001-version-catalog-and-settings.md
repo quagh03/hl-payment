@@ -15,12 +15,10 @@ FT-001 creates the Gradle skeleton the rest of EP-001 builds on: one version cat
 
 ## User stories
 
-Story files stay in the [delivery plan](../delivery-plan.md) until they are split.
-
 | ID | Story | Status |
 |---|---|---|
-| US-001 | One version catalog: Boot, Kafka, Flyway, and Testcontainers versions are declared once | Backlog |
-| US-002 | One include in settings registers a module | Backlog |
+| US-001 | [One version catalog](../user-stories/US-001-one-version-catalog.md) | Backlog |
+| US-002 | [One include in settings](../user-stories/US-002-one-include-in-settings.md) | Backlog |
 
 ## Functional behavior
 

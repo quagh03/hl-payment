@@ -313,12 +313,12 @@ sequenceDiagram
   C->>KG: POST /v1/payments/topups (JWT, Idempotency-Key)
   KG->>KG: validate JWT, rate limit, add X-Correlation-Id
   KG->>PM: forward
-  PM->>PM: create Payment(INITIATED) + SagaInstance; outbox PaymentInitiated
-  PM->>GA: POST /intents {paymentId, amount, provider}
+  PM->>PM: create Payment INITIATED and SagaInstance, write outbox PaymentInitiated
+  PM->>GA: POST /intents with paymentId, amount, provider
   GA->>PSP: create payment (signed request)
   PSP-->>GA: payUrl, pspTxnId
-  GA-->>PM: {payUrl, gatewayTxnId}
-  PM-->>C: 202 {paymentId, payUrl}
+  GA-->>PM: payUrl, gatewayTxnId
+  PM-->>C: 202 paymentId, payUrl
   C->>PSP: user pays on PSP page
   PSP->>KG: IPN webhook (signed)
   KG->>GA: /webhooks/momo (no JWT)
@@ -328,7 +328,7 @@ sequenceDiagram
   K->>PM: consume (inbox dedupe)
   PM->>LG: POST /transfers (postImmediately, idempotencyKey = paymentId)
   LG-->>PM: POSTED
-  PM->>PM: Payment → COMPLETED; outbox PaymentCompleted
+  PM->>PM: Payment becomes COMPLETED, write outbox PaymentCompleted
   LG->>K: TransferPosted
   K->>WL: update balance projection
   PM->>K: PaymentCompleted

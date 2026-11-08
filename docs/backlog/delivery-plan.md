@@ -83,7 +83,7 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 
 | ID | Feature | Size | Scope |
 |---|---|---|---|
-| FT-001 | Version catalog and settings | S | `gradle/libs.versions.toml` and `settings.gradle.kts` include `build-logic`, `platform/*`, and `services/*` |
+| FT-001 | [Version catalog and settings](./features/FT-001-version-catalog-and-settings.md) | S | Catalog, wrapper, and settings register `build-logic`. A later module is one `include` |
 | FT-002 | Convention plugins | M | `hl.java-conventions` (toolchain, JSpecify, tests), `hl.spring-service` (Boot 4, actuator, OTel, Flyway, Testcontainers), `hl.library` |
 | FT-003 | Single check entrypoint | S | `./gradlew check` compiles and tests every included project |
 

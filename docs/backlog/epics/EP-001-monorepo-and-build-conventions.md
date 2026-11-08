@@ -152,11 +152,11 @@ The root build applies the `base` plugin so `check` exists, and that task depend
 
 | ID | Feature | Status |
 |---|---|---|
-| FT-001 | Version catalog and settings | Backlog |
+| FT-001 | [Version catalog and settings](../features/FT-001-version-catalog-and-settings.md) | Backlog |
 | FT-002 | Convention plugins | Backlog |
 | FT-003 | Single check entrypoint | Backlog |
 
-Feature and story files are not split yet. When they are, use `../features/FT-001-version-catalog-and-settings.md`, `../features/FT-002-convention-plugins.md`, and `../features/FT-003-single-check-entrypoint.md`. Stories stay in the [delivery plan](../delivery-plan.md) until then: US-001 and US-002 under FT-001, US-003 through US-005 under FT-002, US-006 under FT-003.
+FT-002 and FT-003 are not split yet. When they are, use `../features/FT-002-convention-plugins.md` and `../features/FT-003-single-check-entrypoint.md`. Stories stay in the [delivery plan](../delivery-plan.md) until then: US-001 and US-002 under FT-001, US-003 through US-005 under FT-002, US-006 under FT-003.
 
 ## Success criteria
 

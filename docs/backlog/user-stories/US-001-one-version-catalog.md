@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Feature | [FT-001](../features/FT-001-version-catalog-and-settings.md) |
-| Status | Backlog |
+| Status | Done |
 | Phase | 0 |
 | Estimate | S |
 | Last updated | 2026-11-08 |
@@ -50,13 +50,13 @@ Scenario: a second libs catalog fails configuration
 ## Notes
 
 - Catalog shape, aliases, and the patch-version selection procedure are in [FT-001](../features/FT-001-version-catalog-and-settings.md#version-catalog).
-- This story adds `gradle/libs.versions.toml`, the wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`), the `versionCatalogs` block in `build-logic/settings.gradle.kts`, and `build-logic/build.gradle.kts` with `kotlin-dsl`, the Boot BOM platform, `junit-jupiter`, and `useJUnitPlatform()`.
-- [US-002](US-002-one-include-in-settings.md) owns the root settings, `gradle.properties`, the repository lock, and the include path. The Foojay plugin line it adds is the one version literal the catalog test allows in `*.gradle.kts`.
+- This story adds `gradle/libs.versions.toml`, the wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`), `build-logic/settings.gradle.kts` (the shared catalog plus the repository lock the tests need in order to resolve), and `build-logic/build.gradle.kts` with `kotlin-dsl`, the Boot BOM platform, `junit-jupiter`, `junit-platform-launcher`, and `useJUnitPlatform()`.
+- Root `settings.gradle.kts` only includes `build-logic` and names the root project, so `./gradlew :build-logic:test` has a build to run. `.gitignore` ignores `.gradle/` and `build/`. [US-002](US-002-one-include-in-settings.md) still owns `gradle.properties`, the root repository lock, the include path, and the Foojay plugin line. That line is the one version literal the catalog test allows in `*.gradle.kts`.
 - FT-002 adds the Boot 4 OpenTelemetry alias and the convention plugins.
 
 ## Definition of done
 
-- [ ] Acceptance scenarios automated in `build-logic`
-- [ ] `./gradlew :build-logic:test` passes on Java 25
-- [ ] The catalog comment records the Spring Boot patch, the Testcontainers BOM check, and the Error Prone decision
-- [ ] [FT-001](../features/FT-001-version-catalog-and-settings.md) matches the catalog that was checked in
+- [x] Acceptance scenarios automated in `build-logic`
+- [x] `./gradlew :build-logic:test` passes on Java 25
+- [x] The catalog comment records the Spring Boot patch, the Testcontainers BOM check, and the Error Prone decision
+- [x] [FT-001](../features/FT-001-version-catalog-and-settings.md) matches the catalog that was checked in

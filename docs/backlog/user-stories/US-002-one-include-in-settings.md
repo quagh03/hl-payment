@@ -51,7 +51,7 @@ Scenario: root settings register the included build and the toolchain resolver
 
 - Depends on [US-001](US-001-one-version-catalog.md) for the catalog, the wrapper, and the `build-logic` test source set.
 - Settings layout and the include mapping are in [FT-001](../features/FT-001-version-catalog-and-settings.md#settings).
-- This story adds the root `settings.gradle.kts`, root `gradle.properties`, `.gitignore` for `.gradle/` and `build/`, and `FAIL_ON_PROJECT_REPOS` plus `mavenCentral()` in both the root settings and `build-logic/settings.gradle.kts`.
+- US-001 already added root `settings.gradle.kts` with `includeBuild("build-logic")`, the Plugin Portal in `pluginManagement`, and `rootProject.name = "hl-payment"`. It also added `.gitignore` and the repository lock in `build-logic/settings.gradle.kts`. This story adds the Foojay plugin, root `gradle.properties`, `FAIL_ON_PROJECT_REPOS` and `mavenCentral()` in the root settings, type-safe project accessors, and the include-path tests.
 - The root settings include `build-logic` only. A later epic appends the `include` line when it adds the first module. The build file that names `hl.library` or `hl.spring-service` arrives with FT-002.
 - On a wrapper release that still treats `TYPESAFE_PROJECT_ACCESSORS` as a preview, settings enable that flag. On a release that has graduated the preview and rejects the flag, settings omit the line and accessors stay on.
 - FT-003 adds the root `build.gradle.kts` and the `check` task.

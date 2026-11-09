@@ -4,7 +4,7 @@
 |---|---|
 | Status | Proposed |
 | Owner | huylq |
-| Last updated | 2026-11-08 |
+| Last updated | 2026-11-09 |
 | Phase | 0–4 |
 | HLD | [high-level-design.md](../architecture/high-level-design.md) |
 | Phase summary | [roadmap.md](./roadmap.md) |
@@ -83,6 +83,7 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 | FT-001 | Version catalog and settings | S | `gradle/libs.versions.toml` and `settings.gradle.kts` include `build-logic`, `platform/*`, and `services/*` |
 | FT-002 | Convention plugins | M | `hl.java-conventions` (toolchain, JSpecify, tests), `hl.spring-service` (Boot 4, actuator, OTel, Flyway, Testcontainers), `hl.library` |
 | FT-003 | Single check entrypoint | S | `./gradlew check` compiles and tests every included project |
+| FT-064 | Service scaffold | S | A `build-logic` task creates a service directory, one `include`, and a build file that applies `hl.spring-service`. Versions stay in the catalog |
 
 | ID | Feature | Story |
 |---|---|---|
@@ -92,6 +93,9 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 | US-004 | FT-002 | As a developer, I want a Spring service plugin that already applies actuator, OpenTelemetry, Flyway, and Testcontainers. |
 | US-005 | FT-002 | As a developer, I want a library plugin for `platform-*` modules that are not Boot applications. |
 | US-006 | FT-003 | As a developer, I want `./gradlew check` to be the only local gate for the monorepo. |
+| US-108 | FT-064 | As a developer, I want a task that creates a service module on `hl.spring-service` so I do not start from Spring Initializr. |
+
+FT-064 is numbered after the rest of the plan so existing ids stay stable. It depends on FT-002 and on the EP-004 probe. The probe is written by hand and is the skeleton the task copies. The task adds `services/<name>/`, one `include("services:<name>")` line, a build file whose `plugins` block is `id("hl.spring-service")`, and the root `package-info.java` with `@NullMarked`. It writes no version, no wrapper, and no `repositories` block. A `platform-*` module stays one `include` plus `id("hl.library")`. FT-064 does not block the M0 exit.
 
 ### EP-002 — Platform libraries
 

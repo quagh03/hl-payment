@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Status | Proposed |
-| Last updated | 2026-11-08 |
+| Last updated | 2026-11-09 |
 | HLD | [high-level-design.md](../architecture/high-level-design.md) |
 
 Each phase ends with a runnable system and at least one end-to-end scenario test. The work breakdown
@@ -13,7 +13,7 @@ Each phase ends with a runnable system and at least one end-to-end scenario test
 ## Phase 0 — Foundation
 
 Deliverables:
-- Gradle monorepo: `settings.gradle.kts`, version catalog, convention plugins (`build-logic/`).
+- Gradle monorepo: `settings.gradle.kts`, version catalog, convention plugins (`build-logic/`). After the probe service exists, a `build-logic` task scaffolds the next service onto those plugins without copying versions out of the catalog.
 - `platform-*` libraries: core types, `ProblemDetail` handling, required headers, correlation id, idempotency filter, outbox/inbox, event envelope, resource-server security, observability defaults, Testcontainers fixtures, ArchUnit rules.
 - `deploy/local/docker-compose.yml`: Postgres, Kafka + UI, Redis, Kong (DB-less), MailHog, OTel Collector, Prometheus, Grafana, Tempo, Loki.
 - `identity-service`: Spring Authorization Server, users/clients/roles, JWKS; Kong `jwt` plugin wired to its public key.

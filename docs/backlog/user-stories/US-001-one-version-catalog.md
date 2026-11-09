@@ -51,7 +51,7 @@ Scenario: a second libs catalog fails configuration
 
 - Catalog shape, aliases, and the patch-version selection procedure are in [FT-001](../features/FT-001-version-catalog-and-settings.md#version-catalog).
 - This story adds `gradle/libs.versions.toml`, the wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`), `build-logic/settings.gradle.kts` (the shared catalog plus the repository lock the tests need in order to resolve), and `build-logic/build.gradle.kts` with `kotlin-dsl`, the Boot BOM platform, `junit-jupiter`, `junit-platform-launcher`, and `useJUnitPlatform()`.
-- Root `settings.gradle.kts` only includes `build-logic` and names the root project, so `./gradlew :build-logic:test` has a build to run. `.gitignore` ignores `.gradle/` and `build/`. [US-002](US-002-one-include-in-settings.md) still owns `gradle.properties`, the root repository lock, the include path, and the Foojay plugin line. That line is the one version literal the catalog test allows in `*.gradle.kts`.
+- Root `settings.gradle.kts` only includes `build-logic` and names the root project, so `./gradlew :build-logic:test` has a build to run. `.gitignore` ignores `.gradle/` and `build/`. [US-002](US-002-one-include-in-settings.md) adds `gradle.properties`, the root repository lock, the include path, and the Foojay plugin line. That line is the one version literal the catalog test allows in `*.gradle.kts`.
 - FT-002 adds the Boot 4 OpenTelemetry alias and the convention plugins.
 
 ## Definition of done

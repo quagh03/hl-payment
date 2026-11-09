@@ -5,7 +5,7 @@
 | Status | Backlog |
 | Phase | 0 |
 | Owner | huylq |
-| Last updated | 2026-11-08 |
+| Last updated | 2026-11-09 |
 | Services | `build-logic` |
 | Size | M |
 | Depends on | — |
@@ -152,7 +152,7 @@ The root build applies the `base` plugin so `check` exists, and that task depend
 
 | ID | Feature | Status |
 |---|---|---|
-| FT-001 | [Version catalog and settings](../features/FT-001-version-catalog-and-settings.md) | Backlog |
+| FT-001 | [Version catalog and settings](../features/FT-001-version-catalog-and-settings.md) | Done |
 | FT-002 | Convention plugins | Backlog |
 | FT-003 | Single check entrypoint | Backlog |
 

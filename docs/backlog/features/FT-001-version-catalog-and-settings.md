@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | Epic | [EP-001](../epics/EP-001-monorepo-and-build-conventions.md) |
-| Status | In progress |
+| Status | Done |
 | Phase | 0 |
 | Owner | huylq |
-| Last updated | 2026-11-08 |
+| Last updated | 2026-11-09 |
 | Services | `build-logic` |
 
 ## Summary
@@ -18,7 +18,7 @@ FT-001 creates the Gradle skeleton the rest of EP-001 builds on: one version cat
 | ID | Story | Status |
 |---|---|---|
 | US-001 | [One version catalog](../user-stories/US-001-one-version-catalog.md) | Done |
-| US-002 | [One include in settings](../user-stories/US-002-one-include-in-settings.md) | Backlog |
+| US-002 | [One include in settings](../user-stories/US-002-one-include-in-settings.md) | Done |
 
 ## Functional behavior
 
@@ -137,6 +137,13 @@ Recorded by US-001 on 2026-11-08:
 | `jspecify` | 1.0.1 |
 | Error Prone | Supported on the Java 25 toolchain. `errorprone` 2.52.0 and `errorprone-plugin` 5.2.0 |
 
+Recorded by US-002 on 2026-11-09:
+
+| Piece | Value |
+|---|---|
+| Foojay toolchain resolver | `1.0.0`. Latest release on the Plugin Portal, and the first release that runs on Gradle 9. It resolves a requested JDK through the Foojay Disco API, which publishes Java 25 GA packages. |
+| Type-safe project accessors | Still a feature preview in Gradle 9.9.0 (`TYPESAFE_PROJECT_ACCESSORS` remains active). The root settings enable the preview. |
+
 ### Settings
 
 Root `settings.gradle.kts`:
@@ -150,7 +157,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "<recorded at implementation>"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 dependencyResolutionManagement {

@@ -3,10 +3,10 @@
 | | |
 |---|---|
 | Feature | [FT-001](../features/FT-001-version-catalog-and-settings.md) |
-| Status | Backlog |
+| Status | Done |
 | Phase | 0 |
 | Estimate | S |
-| Last updated | 2026-11-08 |
+| Last updated | 2026-11-09 |
 
 ## Story
 
@@ -53,12 +53,13 @@ Scenario: root settings register the included build and the toolchain resolver
 - Settings layout and the include mapping are in [FT-001](../features/FT-001-version-catalog-and-settings.md#settings).
 - US-001 already added root `settings.gradle.kts` with `includeBuild("build-logic")`, the Plugin Portal in `pluginManagement`, and `rootProject.name = "hl-payment"`. It also added `.gitignore` and the repository lock in `build-logic/settings.gradle.kts`. This story adds the Foojay plugin, root `gradle.properties`, `FAIL_ON_PROJECT_REPOS` and `mavenCentral()` in the root settings, type-safe project accessors, and the include-path tests.
 - The root settings include `build-logic` only. A later epic appends the `include` line when it adds the first module. The build file that names `hl.library` or `hl.spring-service` arrives with FT-002.
+- Implemented on 2026-11-09. The root settings apply `org.gradle.toolchains.foojay-resolver-convention` version 1.0.0. Gradle 9.9.0 still treats `TYPESAFE_PROJECT_ACCESSORS` as a preview, so settings enable that flag. `gradle.properties` sets `group=com.hl.payment` and `version=0.0.1-SNAPSHOT`.
 - On a wrapper release that still treats `TYPESAFE_PROJECT_ACCESSORS` as a preview, settings enable that flag. On a release that has graduated the preview and rejects the flag, settings omit the line and accessors stay on.
 - FT-003 adds the root `build.gradle.kts` and the `check` task.
 
 ## Definition of done
 
-- [ ] Acceptance scenarios automated in `build-logic`
-- [ ] `./gradlew :build-logic:test` passes on Java 25
-- [ ] `./gradlew projects` on a clean checkout lists root project `hl-payment` and included build `build-logic`
-- [ ] [FT-001](../features/FT-001-version-catalog-and-settings.md) matches the include contract that was checked in
+- [x] Acceptance scenarios automated in `build-logic`
+- [x] `./gradlew :build-logic:test` passes on Java 25
+- [x] `./gradlew projects` on a clean checkout lists root project `hl-payment` and included build `build-logic`
+- [x] [FT-001](../features/FT-001-version-catalog-and-settings.md) matches the include contract that was checked in

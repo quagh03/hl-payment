@@ -27,6 +27,8 @@ What this feature adds, in two or three sentences.
 
 ## Technical design
 
+Point at the component design. Record only the decisions this feature adds.
+
 - Aggregates and invariants touched
 - Commands / APIs (link to `contracts/openapi/`)
 - Events produced / consumed (link to `contracts/events/`)

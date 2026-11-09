@@ -37,7 +37,7 @@ docs/
 │   └── events/                       # JSON Schema per event type + version
 ├── backlog/                          # delivery planning
 │   ├── roadmap.md                    # phases and milestones
-│   ├── delivery-plan.md              # milestone → epic → feature → story breakdown
+│   ├── delivery-plan.md              # milestones and epics; features and stories come from the component design
 │   ├── epics/                        # EP-xxx-<slug>.md
 │   ├── features/                     # FT-xxx-<slug>.md
 │   └── user-stories/                 # US-xxx-<slug>.md
@@ -61,7 +61,7 @@ docs/
 | Service design | service name | `architecture/services/<service>.md` | `ledger-service.md` |
 | Event schema | `<context>.<event>.v<n>` | `api/events/<context>/<event>.v<n>.json` | `api/events/payment/payment-completed.v1.json` |
 
-Hierarchy: **Epic → Feature → User story**. Every story links up to its feature; every feature links up to its epic and to the services it touches.
+Hierarchy: **milestone → epic → component design → feature → user story**. The delivery plan owns milestones and epics. A service design (or a cross-cutting design) is written first. Features and stories are split from that design when the epic moves to `Ready`. Every story links up to its feature; every feature links up to its epic, to the design, and to the services it touches. M0 is listed in the delivery plan because the HLD already specifies it.
 
 ## Conventions
 

@@ -56,3 +56,8 @@ Link to `contracts/openapi/<service>.yaml`.
 ## Open questions
 
 - 
+
+## Delivery
+
+Features and user stories are split from this design once Status is `Proposed`. Until then the delivery plan lists the epic and a candidate scope only.
+

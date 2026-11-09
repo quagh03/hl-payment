@@ -7,6 +7,7 @@
 | Owner | |
 | Last updated | YYYY-MM-DD |
 | Services | `service-a`, `service-b` |
+| Design | `architecture/services/<service>.md` or an HLD section |
 
 ## Goal
 
@@ -32,6 +33,7 @@ Out of scope:
 
 ## Architecture references
 
+- Component design: 
 - HLD sections: 
 - ADRs: 
 - Domain events introduced or changed: 

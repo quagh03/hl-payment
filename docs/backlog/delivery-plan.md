@@ -83,15 +83,15 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 
 | ID | Feature | Size | Scope |
 |---|---|---|---|
-| FT-001 | Version catalog and settings | S | `gradle/libs.versions.toml` and `settings.gradle.kts` include `build-logic`, `platform/*`, and `services/*` |
+| FT-001 | [Version catalog and settings](./features/FT-001-version-catalog-and-settings.md) | S | Catalog, wrapper, and settings register `build-logic`. A later module is one `include` |
 | FT-002 | Convention plugins | M | `hl.java-conventions` (toolchain, JSpecify, tests), `hl.spring-service` (Boot 4, actuator, OTel, Flyway, Testcontainers), `hl.library` |
 | FT-003 | Single check entrypoint | S | `./gradlew check` compiles and tests every included project |
 | FT-064 | Service scaffold | S | A `build-logic` task creates a service directory, one `include`, and a build file that applies `hl.spring-service`. Versions stay in the catalog |
 
 | ID | Feature | Story |
 |---|---|---|
-| US-001 | FT-001 | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
-| US-002 | FT-001 | As a developer, I want adding a module to be one include in settings. |
+| [US-001](./user-stories/US-001-one-version-catalog.md) | FT-001 | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
+| [US-002](./user-stories/US-002-one-include-in-settings.md) | FT-001 | As a developer, I want adding a module to be one include in settings. |
 | US-003 | FT-002 | As a developer, I want Java 25, `@NullMarked`, and JUnit 5 defaults applied without copying build scripts. |
 | US-004 | FT-002 | As a developer, I want a Spring service plugin that already applies actuator, OpenTelemetry, Flyway, and Testcontainers. |
 | US-005 | FT-002 | As a developer, I want a library plugin for `platform-*` modules that are not Boot applications. |

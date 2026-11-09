@@ -6,9 +6,10 @@
 | Last updated | 2026-11-09 |
 | HLD | [high-level-design.md](../architecture/high-level-design.md) |
 
-Each phase ends with a runnable system and at least one end-to-end scenario test. The work breakdown
-(milestones, epics, features, stories) is [delivery-plan.md](./delivery-plan.md). Split an epic into
-`epics/` from `templates/epic.md` when it moves to Ready.
+Each phase ends with a runnable system and at least one end-to-end scenario test. Milestones and epics
+are [delivery-plan.md](./delivery-plan.md). Write the component design, then split the epic into
+`epics/`, `features/`, and `user-stories/` when it moves to Ready. M0 is the exception: its features
+are already listed in the delivery plan.
 
 ## Phase 0 — Foundation
 

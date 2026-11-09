@@ -495,7 +495,7 @@ success / failure / duplicate / late webhooks deterministically for tests.
 | 1 | `user-service`, `wallet-service`, `ledger-service`; P2P transfer via sync calls; outbox + wallet projection | DDD aggregates, double-entry, two-phase transfers, outbox/inbox |
 | 2 | `payment-service` + `gateway-adapter-service` with Mock PSP; top-up saga; polling fallback | Orchestration saga, webhooks, idempotency, ACL |
 | 3 | MoMo + VNPay sandboxes; `merchant-service` (HMAC API, merchant payment, refund); `notification-service` | Real integrations, hold/capture, choreography consumers, outbound webhooks |
-| 4 | Withdrawal with compensation; `reconciliation-service`; Debezium relay; chaos tests; dashboards/SLOs | Compensation, reconciliation, CDC, resilience engineering |
+| 4 | Withdrawal with compensation; `reconciliation-service`; Debezium relay; chaos tests; dashboards/SLOs; Avro on one topic | Compensation, reconciliation, CDC, resilience engineering |
 
 Detailed plan: [backlog/delivery-plan.md](../backlog/delivery-plan.md). Phase summary: [backlog/roadmap.md](../backlog/roadmap.md).
 

@@ -31,7 +31,7 @@ Sizes: **S** one module or endpoint, **M** one aggregate or adapter, **L** a new
 | M1 Internal money | 1 | Ledger is the system of record; wallets project it; P2P posts or voids | EP-005–EP-008 | Property tests hold ledger invariants. A P2P updates both wallet projections. Restarting `wallet-service` mid-flow converges |
 | M2 External money in | 2 | Top-up through Mock PSP, including duplicate, late, and missing webhooks | EP-009–EP-010 | Every Mock PSP script ends with a consistent Payment and ledger. Duplicate webhooks create one posting |
 | M3 Real PSPs and merchants | 3 | MoMo and VNPay sandboxes, merchant pay and refund, notifications | EP-011–EP-013 | Top up via VNPay sandbox, pay a merchant order, partial refund. Merchant receives signed webhooks. Ledger matches |
-| M4 Money out and operations | 4 | Withdrawal compensation, reconciliation, CDC, chaos, SLOs | EP-014–EP-016 | Chaos scenarios stay consistent. An injected break is detected. Dashboards show the SLOs |
+| M4 Money out and operations | 4 | Withdrawal compensation, reconciliation, CDC, chaos, SLOs, Avro on one topic | EP-014–EP-016 | Chaos scenarios stay consistent. An injected break is detected. Dashboards show the SLOs. One topic is published as Avro |
 
 ```mermaid
 flowchart LR
@@ -48,7 +48,7 @@ Out of every milestone, matching the HLD: CI/CD, Kubernetes, multi-region, and r
 These are not ADRs. They are inputs to the component design. Change them there, before the epic is split into features.
 
 - The polling outbox is the relay through M3. Debezium replaces it in the EP-016 design. Payloads stay the same.
-- Events are JSON with JSON Schema through M3. Avro on one topic is a stretch in the EP-016 design.
+- Events are JSON with JSON Schema through M3. EP-016 publishes one topic as Avro through Schema Registry. That comparison is required to exit M4. JSON stays the default.
 - `payment-service` is the only saga orchestrator. Wallet balance, notifications, merchant summaries, and reconciliation ingest are choreography.
 - Idempotency responses live in Redis, as the HLD states. Kong does rate limiting; services do not duplicate it.
 - `user-service` owns KYC tier policy and account status. `wallet-service` owns limit usage and exposes a synchronous check-and-increment used in the same step as a ledger reserve. The Kafka projection updates balances; it is not the authority for a limit decision.
@@ -59,6 +59,7 @@ These are not ADRs. They are inputs to the component design. Change them there, 
 ## Open questions
 
 Answer these in the design named here, before splitting the slices they block.
+Draft answers (not Accepted until promoted): [open-question-drafts.md](./open-question-drafts.md).
 
 | # | Question | Blocks | Where to write the answer |
 |---|---|---|---|
@@ -80,6 +81,8 @@ Design for EP-001, EP-002, and EP-003 is the HLD. EP-004 also writes `architectu
 
 ### EP-001 — Monorepo and build conventions
 
+Design: [EP-001-monorepo-and-build-conventions.md](./epics/EP-001-monorepo-and-build-conventions.md).
+
 | | |
 |---|---|
 | Status | In progress |
@@ -92,22 +95,20 @@ One Gradle build pins Java 25, Spring Boot 4, and the test stack so later servic
 
 | ID | Feature | Size | Status | Scope |
 |---|---|---|---|---|
-| FT-001 | Version catalog and settings | S | Done | `gradle/libs.versions.toml` and `settings.gradle.kts` include `build-logic`, `platform/*`, and `services/*` |
+| FT-001 | [Version catalog and settings](./features/FT-001-version-catalog-and-settings.md) | S | Done | Catalog, wrapper, and settings register `build-logic`. A later module is one `include` |
 | FT-002 | Convention plugins | M | Backlog | `hl.java-conventions` (toolchain, JSpecify, tests), `hl.spring-service` (Boot 4, actuator, OTel, Flyway, Testcontainers), `hl.library` |
 | FT-003 | Single check entrypoint | S | Backlog | `./gradlew check` compiles and tests every included project |
 | FT-064 | Service scaffold | S | Backlog | A `build-logic` task creates a service directory, one `include`, and a build file that applies `hl.spring-service`. Versions stay in the catalog |
 
 | ID | Feature | Status | Story |
 |---|---|---|---|
-| US-001 | FT-001 | Done | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
-| US-002 | FT-001 | Done | As a developer, I want adding a module to be one include in settings. |
+| [US-001](./user-stories/US-001-one-version-catalog.md) | FT-001 | Done | As a developer, I want one version catalog so Boot, Kafka, Flyway, and Testcontainers versions are declared once. |
+| [US-002](./user-stories/US-002-one-include-in-settings.md) | FT-001 | Done | As a developer, I want adding a module to be one include in settings. |
 | US-003 | FT-002 | Backlog | As a developer, I want Java 25, `@NullMarked`, and JUnit 5 defaults applied without copying build scripts. |
 | US-004 | FT-002 | Backlog | As a developer, I want a Spring service plugin that already applies actuator, OpenTelemetry, Flyway, and Testcontainers. |
 | US-005 | FT-002 | Backlog | As a developer, I want a library plugin for `platform-*` modules that are not Boot applications. |
 | US-006 | FT-003 | Backlog | As a developer, I want `./gradlew check` to be the only local gate for the monorepo. |
 | US-108 | FT-064 | Backlog | As a developer, I want a task that creates a service module on `hl.spring-service` so I do not start from Spring Initializr. |
-
-FT-001, US-001, and US-002 are Done on branch `EP-001-monorepo-and-build-conventions`. That branch holds the catalog, the Java 25 wrapper, root settings, and the split files (`epics/EP-001-monorepo-and-build-conventions.md`, `features/FT-001-version-catalog-and-settings.md`, `user-stories/US-001-one-version-catalog.md`, `user-stories/US-002-one-include-in-settings.md`). `develop` is still the docs-only commit, so those files are absent here until that branch is merged.
 
 FT-064 is numbered after the rest of the plan so existing ids stay stable. It depends on FT-002 and on the EP-004 probe. The probe is written by hand and is the skeleton the task copies. The task adds `services/<name>/`, one `include("services:<name>")` line, a build file whose `plugins` block is `id("hl.spring-service")`, and the root `package-info.java` with `@NullMarked`. It writes no version, no wrapper, and no `repositories` block. A `platform-*` module stays one `include` plus `id("hl.library")`. FT-064 does not block the M0 exit.
 
@@ -471,7 +472,7 @@ Concepts: compensation, reconciliation, CDC, fault injection, SLOs.
 
 Build order: EP-014 and EP-015 in parallel, then EP-016 so chaos runs against withdrawal and recon as well as top-up.
 
-Not in M4, still: CI/CD, Kubernetes, multi-region, production PSP credentials. Avro is optional inside EP-016.
+Not in M4, still: CI/CD, Kubernetes, multi-region, production PSP credentials. Avro stays on one topic; it does not replace JSON Schema.
 
 ### EP-014 — Withdrawal with compensation
 
@@ -536,13 +537,13 @@ Candidate scope:
 | FT-060 | Debezium outbox relay | L | CDC publisher replaces the polling relay. Envelope unchanged. Polling relay remains in git long enough to compare |
 | FT-061 | Chaos scenarios | L | Kill ledger mid-saga, drop webhook, duplicate webhook, Kafka rebalance during handling |
 | FT-062 | Dashboards, SLOs, DLT runbook | M | Meters from the HLD, three SLOs, replay steps under `docs/runbooks/` |
-| FT-063 | Avro comparison | S | Stretch. One topic via Schema Registry. Phase exit does not require it |
+| FT-063 | Avro comparison | S | One topic via Schema Registry, compared with JSON Schema. Required for the M4 exit |
 
-Carry into the design: Debezium publishes the same envelope the polling relay published, still ordered per aggregate. Each chaos case ends with Payment state, ledger postings, and wallet projection in agreement. The runbook replays a DLT record through the inbox without a second business effect. Grafana shows `payments_total`, `saga_duration_seconds`, `outbox_lag_seconds`, `inbox_duplicates_total`, `ledger_imbalance_total`, and `webhook_signature_failures_total`.
+Carry into the design: Debezium publishes the same envelope the polling relay published, still ordered per aggregate. Each chaos case ends with Payment state, ledger postings, and wallet projection in agreement. The runbook replays a DLT record through the inbox without a second business effect. Grafana shows `payments_total`, `saga_duration_seconds`, `outbox_lag_seconds`, `inbox_duplicates_total`, `ledger_imbalance_total`, and `webhook_signature_failures_total`. One topic is published as Avro through Schema Registry and compared with JSON Schema.
 
 Initial SLOs, from the HLD, checked on the local stack with the top-up scenario: top-up completion p95 after webhook under 2s, outbox lag under 5s, `ledger_imbalance_total` stays 0.
 
-**M4 exit:** a definite withdrawal failure voids the pending debit, an injected recon break is detected, chaos cases stay consistent, and the dashboards show the meters above.
+**M4 exit:** a definite withdrawal failure voids the pending debit, an injected recon break is detected, chaos cases stay consistent, the dashboards show the meters above, and one topic is published as Avro.
 
 ---
 

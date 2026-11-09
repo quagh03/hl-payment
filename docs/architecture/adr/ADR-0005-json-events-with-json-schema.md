@@ -21,4 +21,4 @@ changes create `v<n+1>` of the event type and a new topic suffix.
 
 - Positive: human-readable messages in Kafka UI and logs; zero extra infrastructure; schemas reviewed in pull requests.
 - Negative: larger payloads and no registry-enforced compatibility; acceptable for an educational platform.
-- Future: Phase 4 may introduce Avro + Schema Registry for `ledger.events.v1` to compare approaches; this ADR will be superseded if that becomes the default.
+- Future: Phase 4 introduces Avro + Schema Registry for one topic (`ledger.events.v1`) so the two approaches can be compared. That comparison is required to exit the phase. JSON Schema stays the default unless a later ADR supersedes this one.
